@@ -1,0 +1,1 @@
+Launcher icon: ic_launcher_photo.png (512×512, letterboxed from Rem_image.png so the full image fits inside the adaptive icon). Re-run tools/letterbox_icon.ps1 after replacing the source PNG.

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Política de privadesa — Rowing Metrics</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f7f7f5;
+      --card: #ffffff;
+      --text: #1a1a1a;
+      --muted: #555;
+      --border: #e2e2de;
+      --accent: #2e7d32;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #121212;
+        --card: #1c1c1c;
+        --text: #f2f2f2;
+        --muted: #b0b0b0;
+        --border: #333;
+      }
+    }
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+    main {
+      max-width: 44rem;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 4rem;
+    }
+    h1 {
+      font-size: 1.75rem;
+      margin: 0 0 0.35rem;
+    }
+    h2 {
+      font-size: 1.2rem;
+      margin: 1.75rem 0 0.6rem;
+      color: var(--accent);
+    }
+    p, li { color: var(--text); }
+    .meta {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 1.5rem;
+    }
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
+      margin-bottom: 1.75rem;
+      font-family: system-ui, sans-serif;
+      font-size: 0.9rem;
+    }
+    nav a { color: var(--accent); }
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem 1.35rem 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    ul { padding-left: 1.2rem; }
+    a { color: var(--accent); }
+  </style>
+</head>
+<body>
+<main>
+  <nav>
+    <a href="#ca">Català</a>
+    <a href="#es">Español</a>
+    <a href="#en">English</a>
+    <a href="#fr">Français</a>
+  </nav>
+
+  <!-- ========== CATALÀ ========== -->
+  <section id="ca" lang="ca">
+    <h1>Política de privadesa</h1>
+    <p class="meta"><strong>Rowing Metrics</strong> (com.gardenyes.rowingmetrics)<br />
+      Última actualització: 25 d’agost de 2026<br />
+      Responsable: Antoni Gardenyes — <a href="mailto:gardenyes@gmail.com">gardenyes@gmail.com</a></p>
+
+    <h2>1. Introducció</h2>
+    <p>Aquesta política descriu com l’aplicació <strong>Rowing Metrics</strong> tracta les dades quan la feu servir. L’aplicació està pensada per mesurar sessions de rem al dispositiu: ritme de braçada, velocitat, distància i temps.</p>
+
+    <h2>2. Quines dades es processen</h2>
+    <ul>
+      <li><strong>Ubicació (GPS, aproximada i precisa)</strong>: durant una sessió activa (després de prémer Inici), per calcular velocitat i distància. No es desa el trajecte GPS complet; només se’n deriven mètriques de resum (per exemple distància i velocitat mitjana).</li>
+      <li><strong>Sensors de moviment</strong> (acceleròmetre / giroscopi): per detectar el ritme de braçada. Aquestes dades es processen en temps real al dispositiu i no s’envien a fora.</li>
+      <li><strong>Historial d’activitats</strong>: quan atureu una sessió, es desa localment un resum (data/hora, durada, ritme mitjà, velocitat mitjana, distància).</li>
+      <li><strong>Preferències</strong>: idioma, sensibilitat de detecció i suavització de velocitat, desades al dispositiu.</li>
+      <li><strong>Exportació CSV</strong>: si exporteu l’historial, genereu un fitxer al lloc que trieu. Vós controleu on es desa i amb qui el compartiu.</li>
+    </ul>
+    <p>L’aplicació <strong>no</strong> demana un compte d’usuari i <strong>no</strong> recull nom, correu, contactes ni identificadors publicitaris.</p>
+
+    <h2>3. Finalitat</h2>
+    <p>Les dades s’utilitzen només per oferir les funcions de l’aplicació (mesura en viu, historial i exportació opcional). No s’utilitzen per a publicitat ni per crear perfils comercials.</p>
+
+    <h2>4. Emmagatzematge i transmissió</h2>
+    <ul>
+      <li>El processament i l’emmagatzematge es fan <strong>al vostre dispositiu</strong>.</li>
+      <li>L’aplicació <strong>no envia</strong> les vostres dades de sessió, ubicació ni sensors a servidors nostres ni a tercers.</li>
+      <li>No hi ha còpia de seguretat automàtica al núvol per part de l’aplicació (<code>allowBackup</code> desactivat).</li>
+      <li>No s’inclouen serveis d’anàlisi, publicitat ni xarxes socials dins l’aplicació.</li>
+    </ul>
+
+    <h2>5. Permisos</h2>
+    <ul>
+      <li><strong>Ubicació</strong>: necessària per a velocitat i distància. Podeu denegar-la; aleshores aquestes mètriques no estaran disponibles.</li>
+      <li><strong>Sensors de moviment</strong>: necessaris per al ritme de braçada.</li>
+      <li><strong>Mantenir la pantalla activa / sobre la pantalla de bloqueig</strong>: per poder consultar mètriques mentre remeu.</li>
+    </ul>
+
+    <h2>6. Conservació i eliminació</h2>
+    <p>Les dades romanen al dispositiu fins que les esborreu (sessió individual o tot l’historial) o desinstal·leu l’aplicació. La desinstal·lació elimina les dades locals de l’aplicació.</p>
+
+    <h2>7. Menors</h2>
+    <p>L’aplicació no està dirigida a menors de 13 anys i no recull deliberadament dades de menors.</p>
+
+    <h2>8. Canvis</h2>
+    <p>Podem actualitzar aquesta política. La data d’«Última actualització» indicarà la versió vigent. Els canvis importants es reflectiran en aquesta pàgina.</p>
+
+    <h2>9. Contacte</h2>
+    <p>Per a preguntes sobre privadesa: <a href="mailto:gardenyes@gmail.com">gardenyes@gmail.com</a>.</p>
+  </section>
+
+  <!-- ========== CASTELLANO ========== -->
+  <section id="es" lang="es">
+    <h1>Política de privacidad</h1>
+    <p class="meta"><strong>Rowing Metrics</strong> (com.gardenyes.rowingmetrics)<br />
+      Última actualización: 25 de agosto de 2026<br />
+      Responsable: Antoni Gardenyes — <a href="mailto:gardenyes@gmail.com">gardenyes@gmail.com</a></p>
+
+    <h2>1. Introducción</h2>
+    <p>Esta política describe cómo la aplicación <strong>Rowing Metrics</strong> trata los datos cuando la usa. La app mide sesiones de remo en el dispositivo: ritmo de brazada, velocidad, distancia y tiempo.</p>
+
+    <h2>2. Qué datos se procesan</h2>
+    <ul>
+      <li><strong>Ubicación (GPS, aproximada y precisa)</strong>: durante una sesión activa (tras pulsar Inicio), para calcular velocidad y distancia. No se guarda el recorrido GPS completo; solo métricas de resumen.</li>
+      <li><strong>Sensores de movimiento</strong>: para detectar el ritmo de brazada. Se procesan en el dispositivo y no se envían fuera.</li>
+      <li><strong>Historial de actividades</strong>: al detener una sesión se guarda localmente un resumen (fecha/hora, duración, ritmo medio, velocidad media, distancia).</li>
+      <li><strong>Preferencias</strong>: idioma, sensibilidad y suavizado de velocidad, guardados en el dispositivo.</li>
+      <li><strong>Exportación CSV</strong>: si exporta el historial, el archivo se crea donde usted elija.</li>
+    </ul>
+    <p>La app <strong>no</strong> requiere cuenta y <strong>no</strong> recoge nombre, correo, contactos ni identificadores publicitarios.</p>
+
+    <h2>3. Finalidad</h2>
+    <p>Los datos se usan solo para las funciones de la app. No se usan para publicidad ni perfiles comerciales.</p>
+
+    <h2>4. Almacenamiento y transmisión</h2>
+    <ul>
+      <li>El tratamiento se realiza <strong>en su dispositivo</strong>.</li>
+      <li>La app <strong>no envía</strong> datos de sesión, ubicación ni sensores a nuestros servidores ni a terceros.</li>
+      <li>No hay copia de seguridad automática en la nube por parte de la app.</li>
+      <li>No se incluyen servicios de analítica, publicidad ni redes sociales.</li>
+    </ul>
+
+    <h2>5. Permisos</h2>
+    <ul>
+      <li><strong>Ubicación</strong>: necesaria para velocidad y distancia.</li>
+      <li><strong>Sensores de movimiento</strong>: necesarios para el ritmo de brazada.</li>
+      <li><strong>Pantalla activa / sobre bloqueo</strong>: para consultar métricas mientras rema.</li>
+    </ul>
+
+    <h2>6. Conservación y eliminación</h2>
+    <p>Los datos permanecen en el dispositivo hasta que los borre o desinstale la app.</p>
+
+    <h2>7. Menores</h2>
+    <p>La app no está dirigida a menores de 13 años.</p>
+
+    <h2>8. Cambios</h2>
+    <p>Podemos actualizar esta política; la fecha de actualización indica la versión vigente.</p>
+
+    <h2>9. Contacto</h2>
+    <p><a href="mailto:gardenyes@gmail.com">gardenyes@gmail.com</a></p>
+  </section>
+
+  <!-- ========== ENGLISH ========== -->
+  <section id="en" lang="en">
+    <h1>Privacy Policy</h1>
+    <p class="meta"><strong>Rowing Metrics</strong> (com.gardenyes.rowingmetrics)<br />
+      Last updated: 25 August 2026<br />
+      Controller: Antoni Gardenyes — <a href="mailto:gardenyes@gmail.com">gardenyes@gmail.com</a></p>
+
+    <h2>1. Introduction</h2>
+    <p>This policy explains how <strong>Rowing Metrics</strong> handles data when you use the app. The app measures on-device rowing sessions: stroke rate, speed, distance, and time.</p>
+
+    <h2>2. Data processed</h2>
+    <ul>
+      <li><strong>Location (GPS, approximate and precise)</strong>: during an active session (after Start), to compute speed and distance. The full GPS track is not stored; only summary metrics are derived.</li>
+      <li><strong>Motion sensors</strong> (accelerometer / gyroscope): to detect stroke rate. Processed in real time on the device and not sent elsewhere.</li>
+      <li><strong>Activity history</strong>: when you stop a session, a local summary is saved (date/time, duration, average stroke rate, average speed, distance).</li>
+      <li><strong>Preferences</strong>: language, detection sensitivity, and speed smoothing, stored on the device.</li>
+      <li><strong>CSV export</strong>: if you export history, a file is created where you choose. You control storage and sharing.</li>
+    </ul>
+    <p>The app does <strong>not</strong> require an account and does <strong>not</strong> collect name, email, contacts, or advertising IDs.</p>
+
+    <h2>3. Purpose</h2>
+    <p>Data is used only to provide app features (live metrics, history, optional export). It is not used for advertising or commercial profiling.</p>
+
+    <h2>4. Storage and transmission</h2>
+    <ul>
+      <li>Processing and storage occur <strong>on your device</strong>.</li>
+      <li>The app does <strong>not</strong> send session, location, or sensor data to our servers or to third parties.</li>
+      <li>The app does not perform automatic cloud backup of its data.</li>
+      <li>No analytics, advertising, or social SDKs are included in the app.</li>
+    </ul>
+
+    <h2>5. Permissions</h2>
+    <ul>
+      <li><strong>Location</strong>: required for speed and distance. You may deny it; those metrics will then be unavailable.</li>
+      <li><strong>Motion sensors</strong>: required for stroke rate.</li>
+      <li><strong>Keep screen on / show over lock screen</strong>: so you can view metrics while rowing.</li>
+    </ul>
+
+    <h2>6. Retention and deletion</h2>
+    <p>Data remains on the device until you delete sessions (or all history) or uninstall the app. Uninstalling removes the app’s local data.</p>
+
+    <h2>7. Children</h2>
+    <p>The app is not directed at children under 13 and does not knowingly collect their data.</p>
+
+    <h2>8. Changes</h2>
+    <p>We may update this policy. The “Last updated” date shows the current version.</p>
+
+    <h2>9. Contact</h2>
+    <p><a href="mailto:gardenyes@gmail.com">gardenyes@gmail.com</a></p>
+  </section>
+
+  <!-- ========== FRANÇAIS ========== -->
+  <section id="fr" lang="fr">
+    <h1>Politique de confidentialité</h1>
+    <p class="meta"><strong>Rowing Metrics</strong> (com.gardenyes.rowingmetrics)<br />
+      Dernière mise à jour : 25 août 2026<br />
+      Responsable : Antoni Gardenyes — <a href="mailto:gardenyes@gmail.com">gardenyes@gmail.com</a></p>
+
+    <h2>1. Introduction</h2>
+    <p>Cette politique décrit le traitement des données par <strong>Rowing Metrics</strong>. L’application mesure des sessions d’aviron sur l’appareil : cadence, vitesse, distance et temps.</p>
+
+    <h2>2. Données traitées</h2>
+    <ul>
+      <li><strong>Localisation (GPS, approximative et précise)</strong> : pendant une session active (après Démarrer), pour calculer vitesse et distance. Le parcours GPS complet n’est pas enregistré.</li>
+      <li><strong>Capteurs de mouvement</strong> : pour détecter la cadence. Traitement local uniquement.</li>
+      <li><strong>Historique d’activités</strong> : résumé local à l’arrêt de la session.</li>
+      <li><strong>Préférences</strong> : langue, sensibilité et lissage de vitesse, stockées sur l’appareil.</li>
+      <li><strong>Export CSV</strong> : fichier créé à l’emplacement que vous choisissez.</li>
+    </ul>
+    <p>L’application <strong>ne</strong> demande pas de compte et <strong>ne</strong> collecte pas de nom, e-mail, contacts ni identifiants publicitaires.</p>
+
+    <h2>3. Finalité</h2>
+    <p>Les données servent uniquement aux fonctions de l’app. Pas de publicité ni de profilage commercial.</p>
+
+    <h2>4. Stockage et transmission</h2>
+    <ul>
+      <li>Traitement <strong>sur votre appareil</strong>.</li>
+      <li><strong>Aucun envoi</strong> des données de session, localisation ou capteurs vers nos serveurs ou des tiers.</li>
+      <li>Pas de sauvegarde cloud automatique par l’application.</li>
+      <li>Pas de SDK d’analyse, publicité ou réseaux sociaux.</li>
+    </ul>
+
+    <h2>5. Autorisations</h2>
+    <ul>
+      <li><strong>Localisation</strong> : pour vitesse et distance.</li>
+      <li><strong>Capteurs de mouvement</strong> : pour la cadence.</li>
+      <li><strong>Écran allumé / sur verrouillage</strong> : pour consulter les métriques pendant l’aviron.</li>
+    </ul>
+
+    <h2>6. Conservation et suppression</h2>
+    <p>Les données restent sur l’appareil jusqu’à suppression ou désinstallation de l’app.</p>
+
+    <h2>7. Mineurs</h2>
+    <p>L’application ne s’adresse pas aux enfants de moins de 13 ans.</p>
+
+    <h2>8. Modifications</h2>
+    <p>Cette politique peut être mise à jour ; la date indique la version en vigueur.</p>
+
+    <h2>9. Contact</h2>
+    <p><a href="mailto:gardenyes@gmail.com">gardenyes@gmail.com</a></p>
+  </section>
+</main>
+</body>
+</html>

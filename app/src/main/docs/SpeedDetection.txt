@@ -1,0 +1,136 @@
+Rowing Metrics — GPS speed (and related display) pipeline
+=========================================================
+
+Source of truth in code:
+  - Smoothing:     com.gardenyes.rowingmetrics.GpsSpeedSmoother
+  - Session / UI:  com.gardenyes.rowingmetrics.RowingSessionViewModel
+  - Segment dist:  com.gardenyes.rowingmetrics.calcDistanceKm (GpsMotionTools.kt)
+  - Averaging N:   com.gardenyes.rowingmetrics.RowingMetricsPreferences.getGpsDisplayAverageCount
+
+
+1) Raw speed from the system
+----------------------------
+Foreground location uses Fused Location Provider with high accuracy
+(RowingSessionViewModel: Priority.PRIORITY_HIGH_ACCURACY).
+
+Each [android.location.Location] may include [Location.getSpeed] in **meters per second** (when the
+device / provider reports it). Speed samples are coerced to the range **0 … 50** m/s before filtering.
+
+If a fix has **no** speed (hasSpeed() is false), the Kalman + FIFO are **not** updated for that fix;
+the smoother returns the **last** displayed km/h value (unchanged).
+
+
+2) Fix acceptance (before using a location)
+-------------------------------------------
+A fix is used only if isAcceptableGpsFix():
+  - hasAccuracy() is true
+  - accuracy <= **50** m   (GPS_FIX_MAX_ACCURACY_M)
+  - lat/lon are not both 0
+
+Rejected fixes do not update speed or distance.
+
+
+3) Kalman filter (1D, on speed in m/s)
+--------------------------------------
+After a valid speed sample z (m/s):
+  - Process noise **Q = 0.8**
+  - Measurement noise **R = 2.0**
+  - Standard scalar Kalman update: state x, covariance P, Kalman gain k.
+
+First fix with speed initializes x = z, P = R.
+
+
+4) FIFO of filtered speeds
+--------------------------
+Each Kalman output x (m/s) is appended to a FIFO.
+
+  fifoMax (maximum FIFO length) .......... **8**  (GpsSpeedSmoother.FIFO_MAX_DEFAULT)
+
+Older entries are dropped when length exceeds fifoMax.
+
+
+5) Averaging for display (still in m/s)
+-----------------------------------------
+Let **N** = display averaging window:
+
+  - User setting **1 … 8** in **Rowing Metrics Configuration** (slider “Speed smoothing”);
+    stored under **gps_display_average_n**; default **4** when unset. Legacy stored **0** is read as **1**.
+  - getGpsDisplayAverageCount() matches **N** (1…8), capped by FIFO size.
+
+Computation:
+  - nTake = min(N, current FIFO size)
+  - avgMps = arithmetic mean of the **last nTake** filtered samples (m/s).
+  - If N == 1, that is effectively the **latest** filtered sample only.
+
+Applied at session start and whenever the user changes the slider: speedSmoother.setDisplayAverageCount(...).
+
+
+6) Conversion to km/h (shown as “current speed”)
+-------------------------------------------------
+  displayed_kmh = avgMps × **3.6**
+
+(3.6 × m/s → km/h; same factor as 3600 s/h ÷ 1000 m/km.)
+
+RowingUiState.currentSpeedKmh uses lastSmoothedSpeedKmh after each successful calculate(); the UI is
+refreshed on a timer (see section 8), not on every raw GPS callback.
+
+
+7) Session average speed (shown as “average speed”)
+-----------------------------------------------------
+Not an average of instantaneous speed samples.
+
+Uses the same gated session distance as section 8 and session elapsed time (Start→Stop):
+
+  averageSpeedKmh = sessionDistanceKm × 3_600_000 / sessionElapsedMs
+
+Where sessionDistanceKm only grows after the 4 m + quality gates in section 8, and sessionElapsedMs
+is the session clock. This avoids inflated early averages from raw GPS point-to-point segments
+before movement is confirmed.
+
+If sessionElapsedMs is 0 or sessionDistanceKm is 0, average speed is shown as 0.
+
+
+8) Distance accumulation (related; not used as the primary speed formula)
+--------------------------------------------------------------------------
+Distance is **not** used to compute the large live speed number (that comes from filtered GPS speed).
+
+Session distance grows when:
+  - Great-circle distance from the current **display anchor** to the new fix is at least
+    **MIN_GPS_MOVEMENT_DISPLAY_M = 4** m, and
+  - Quality gate: accuracy <= **80** m OR displacement < **200** m (GPS_DISPLAY_MAX_ACCURACY_M /
+    GPS_DISPLAY_MAX_JUMP_M).
+
+Segment length uses Android Location.distanceBetween (same idea as haversine); see calcDistanceKm.
+
+
+9) Location request cadence
+---------------------------
+  LOCATION_UPDATE_INTERVAL_MS .......... **1000** ms
+  (interval, min update interval, max update delay aligned to ~1 Hz foreground-style updates.)
+
+
+10) UI refresh (when values appear on screen)
+---------------------------------------------
+Constants in RowingSessionViewModel companion:
+
+  SESSION_UI_TICK_MS .................. **1000** ms
+    Periodic pushUi(): session clock, current speed, distance (m), average speed (distance/time),
+    stroke-related fields.
+
+  METRICS_DISPLAY_CYCLE_MS .............. **2005** ms
+    applyStableLiveSpmForSessionSample + pushUi() for SPM session averaging cadence.
+
+GPS location callbacks update GpsSpeedSmoother and distance state; they do **not** call pushUi() on
+every fix — display follows the ~1 s tick for speed/time/distance batching.
+
+
+11) Preference key and configuration UI
+--------------------------------------
+  Preference key: gps_display_average_n (integer, 1…8; default 4).
+  Exposed on the configuration screen as a slider (1…8, step 1) “Speed smoothing”; the current value
+  is shown as a number above the slider.
+
+
+Revision note
+-------------
+Values and formulas match the Kotlin sources listed at the top; update this file when those classes change.

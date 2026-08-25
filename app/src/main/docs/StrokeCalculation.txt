@@ -1,0 +1,90 @@
+Live SPM (what you see during the session)
+==========================================
+
+This document mirrors the web rowing-metrics stroke/SPM pipeline. Android equivalents live under
+com.gardenyes.rowingmetrics (AccelerometerStrokeDetector, StrokeSpmMath.calculateSPM, RowingSessionViewModel).
+
+
+Sensor
+------
+The stroke detector uses accelerometer data at ~40 Hz (25 ms sampling period in μs on Android:
+RowingSessionViewModel STROKE_SENSOR_SAMPLING_PERIOD_US → registerListener on TYPE_LINEAR_ACCELERATION,
+with TYPE_GRAVITY when present). It tracks acceleration vs calibrated positive/negative thresholds and
+records stroke events when the acceleration pattern crosses those thresholds (catch/recovery style peaks).
+
+Three sensitivity profiles (High / Medium / Low) only change AccelerometerStrokeDetector parameters via
+StrokeDetectorPresets; they do not change the SPM formulas below.
+
+
+Updating SPM
+------------
+About every 1995 ms, the session engine runs refreshSPM (via applyStableLiveSpmForSessionSample in
+RowingSessionViewModel, LIVE_SPM_ENGINE_CYCLE_MS). It takes the last 8 detected stroke peak timestamps,
+builds intervals between consecutive stroke timestamps (in milliseconds), and calls calculateSPM.
+
+
+calculateSPM (core formula)
+---------------------------
+Requires at least 8 strokes accumulated before it produces a stable SPM (LIVE_SPM_MIN_STROKES_FOR_STABLE /
+strokeTimestampsMs.size check in StrokeSpmMath); otherwise it returns SPM 0.
+
+Computes the average interval s̄ (ms) across those intervals, then removes outliers: intervals that
+deviate from the mean by more than 40% can be dropped (removeIntervalOutliers; duplicate/conflicting
+cases may be resolved via pickBestMatchWhenTooFew).
+
+SPM is then:
+
+    SPM = 60 / (s̄ / 1000) = 60000 / s̄
+
+i.e. 60 divided by the average interval in seconds; the Kotlin code uses roundToInt() on that value
+(SpmCalcResult.spm).
+
+The stroke interval associated with cadence is that average interval in ms (intervalMs in SpmCalcResult).
+
+If the last stroke is “stale” (logic uses > 3 s between “now” and the last stroke peak time:
+LIVE_SPM_IDLE_AFTER_LAST_STROKE_MS), calculateSPM returns SPM 0.
+
+
+What gets stored on the session object (Android mapping)
+---------------------------------------------------------
+Web-style callback:
+
+    cadence = { value: spm, interval: intervalMs, total: strokeCount }
+
+Android analogue during a session:
+  - Live SPM on screen: RowingSessionViewModel.liveSpmDisplay (from refreshSPM / updateLiveSpmDisplayOnly).
+  - Interval: carried in SpmCalcResult.intervalMs when computing SPM (used internally; UI primarily shows SPM).
+  - Total accepted stroke count (if needed): accelerometerStrokeDetector.acceptedStrokeCount() in the
+    ViewModel only; not exposed on RowingUiState.
+
+
+“Average” SPM for a split / summary
+-------------------------------------
+When the session engine cycle runs and commits a sample for the current split, the app does:
+
+    sessionSpmSampleCount++
+    sessionSpmSampleSum += liveSpmDisplay    // current SPM from the detector path at that tick
+
+So the summary average SPM is not “total strokes / time”. It is:
+
+    Average SPM = (Σ sampled SPM values) / (number of samples)
+                = sessionSpmSampleSum / sessionSpmSampleCount
+
+i.e. the mean of the SPM readings at each saved tick (~1995 ms cadence while running), not a single rate
+from total strokes ÷ minutes.
+
+After Stop, RowingUiState.avgStrokesPerMin uses that sample mean when sessionSpmSampleCount > 0.
+
+
+Related: “strokes” on the screen (not SPM)
+-------------------------------------------
+In the web app, location.strokes may come from a strokes-per-100 m style metric from speed and stroke
+interval (efficiency), not the same as average SPM from the accelerometer.
+
+This Android build does not implement that strokes-per-100 m efficiency metric on the main stroke-rate
+field; the large number on the stroke band is avgStrokesPerMin (SPM). Total strokes are tracked inside the
+ViewModel via acceptedStrokeCount() but not shown as a separate UI field.
+
+If you need a true session average “total strokes / duration in minutes”, compute it from
+acceptedStrokeCount and session duration; the built-in displayed session-average SPM is the sample mean
+of live SPM as above.

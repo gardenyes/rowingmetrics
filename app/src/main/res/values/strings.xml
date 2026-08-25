@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Rowing metrics</string>
+    <string name="export_activities">Export activities</string>
+    <string name="export_activities_title">Export to Excel</string>
+    <string name="export_activities_message">Export all activities to a CSV file? You can open it in Excel or another spreadsheet app.</string>
+    <string name="export_activities_confirm">Export</string>
+    <string name="cancel">Cancel</string>
+</resources>

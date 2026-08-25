@@ -1,0 +1,26 @@
+CREATE TABLE completed_activities (
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    endedAtEpochMs INTEGER NOT NULL,
+    durationMs INTEGER NOT NULL,
+    avgStrokeRate REAL NOT NULL,
+    avgSpeedKmh REAL NOT NULL,
+    distanceMeters REAL NOT NULL
+);
+
+observeAll:
+SELECT * FROM completed_activities ORDER BY endedAtEpochMs DESC;
+
+insertActivity:
+INSERT INTO completed_activities(
+    endedAtEpochMs,
+    durationMs,
+    avgStrokeRate,
+    avgSpeedKmh,
+    distanceMeters
+) VALUES (?, ?, ?, ?, ?);
+
+deleteById:
+DELETE FROM completed_activities WHERE id = ?;
+
+deleteAll:
+DELETE FROM completed_activities;

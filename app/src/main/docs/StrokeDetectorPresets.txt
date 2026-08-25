@@ -1,0 +1,172 @@
+Rowing Metrics — Accelerometer stroke detection: five stroke profiles
+=====================================================================
+
+Source of truth in code:
+  - Parameters: com.gardenyes.rowingmetrics.AccelerometerStrokeDetector (constructor defaults)
+  - Presets:     com.gardenyes.rowingmetrics.StrokeDetectorPresets
+  - Enum:        com.gardenyes.rowingmetrics.StrokeDetectionSensitivity
+
+Default configuration preference: MEDIUM (middle step; blend tuning — see below).
+
+
+Configuration UI (vertical slider)
+----------------------------------
+The configuration screen uses a **vertical 5-step slider** (top = most permissive, bottom = strictest).
+Stored preference is the enum name (VERY_HIGH, HIGH, MEDIUM, LOW, VERY_LOW).
+
+Slider position (top → bottom)   Enum value      On-screen label
+--------------------------------   ------------    -----------------
+1 (top)                            VERY_HIGH       **High**
+2                                  HIGH            (tick mark only)
+3 (middle)                         MEDIUM          **Medium**  ← default
+4                                  LOW             (tick mark only)
+5 (bottom)                         VERY_LOW        **Low**
+
+Only three positions show text: top shows “High”, middle shows “Medium”, bottom shows “Low”.
+The two intermediate steps (HIGH and LOW) are unlabeled tick marks between the named levels.
+
+
+Five levels (most → least permissive)
+---------------------------------------
+  VERY_HIGH — ultra-permissive; above former three-option High
+  HIGH      — same tuning as former three-option High
+  MEDIUM    — proportional blend High → constructor defaults (default)
+  LOW       — full AccelerometerStrokeDetector() constructor defaults
+  VERY_LOW  — extrapolated stricter tuning below Low
+
+
+Overview
+--------
+All presets use the same detector algorithm (gravity-orthogonal linear acceleration magnitude when
+TYPE_GRAVITY is available; adaptive rolling min/max; recovery gate; threshold crossing; peak
+prominence; optional missed-stroke insert). Shared constructor defaults not listed under a preset
+unless overridden apply to every preset:
+
+  thresholdWindowMs .............. 1800 (ms rolling window for min/max)
+  maxEvents ...................... 240
+  minCalibrationSamples .......... 64 (warm-up samples before peaks count)
+
+Missed-stroke helper didWeLostOne (fixed in code): median gap in 260..3800 ms, gap > 1.75× median,
+gap < 5500 ms — same for all presets.
+
+Below, “(default)” means AccelerometerStrokeDetector primary constructor value when the preset does not
+pass that argument.
+
+
+Preset VERY_HIGH (StrokeDetectionSensitivity.VERY_HIGH) — slider top, labeled “High”
+------------------------------------------------------------------------------------
+Description:
+  Most permissive of the five levels. Restores the former ultra-permissive “High” tier (shortest
+  minStrokeGapMs, lowest thresholds). Easiest stroke acceptance; highest false-positive risk in
+  rough water or when handling the device.
+
+Implementation:
+  Overrides (see StrokeDetectorPresets.veryHighSensitivity):
+
+  minStrokeGapMs ................. 220
+  minDynamicRange ................ 0.08   (m/s²)
+  positiveBandFraction ........... 0.48
+  magnitudeSmoothAlpha ........... 0.58   (EMA on magnitude)
+  recoveryBandFraction ........... 0.20
+  peakProminenceFraction ......... 0.025
+  minPeakProminenceAbs ........... 0.035  (m/s²)
+
+  All other parameters (default): thresholdWindowMs 1800, maxEvents 240, minCalibrationSamples 64.
+
+
+Preset HIGH (StrokeDetectionSensitivity.HIGH) — tick mark only (no label)
+-------------------------------------------------------------------------
+Description:
+  Same numeric tuning as the former three-option **High** profile (previously labeled High when
+  only three radio options existed). One step stricter than VERY_HIGH; more permissive than Medium.
+
+Implementation:
+  Overrides (see StrokeDetectorPresets.highSensitivity):
+
+  minStrokeGapMs ................. 260
+  minDynamicRange ................ 0.10   (m/s²)
+  positiveBandFraction ........... 0.50
+  magnitudeSmoothAlpha ........... 0.55   (EMA on magnitude)
+  recoveryBandFraction ........... 0.18
+  peakProminenceFraction ......... 0.03
+  minPeakProminenceAbs ........... 0.04   (m/s²)
+
+  All other parameters (default): thresholdWindowMs 1800, maxEvents 240, minCalibrationSamples 64.
+
+
+Preset MEDIUM (StrokeDetectionSensitivity.MEDIUM) — default in settings, labeled “Medium”
+-----------------------------------------------------------------------------------------
+Description:
+  Proportional blend from **High** tuning toward full constructor defaults (linear interpolation per
+  parameter, t = 0.5). Center of the five-step slider. More permissive than Low / VERY_LOW;
+  stricter than HIGH / VERY_HIGH.
+
+Implementation:
+  StrokeDetectorPresets.mediumSensitivity — derived values at t = 0.5:
+
+  minStrokeGapMs ................. 280
+  minDynamicRange ................ 0.12   (m/s²)
+  positiveBandFraction ........... 0.53
+  magnitudeSmoothAlpha ........... 0.525
+  recoveryBandFraction ........... 0.17
+  peakProminenceFraction ......... 0.035
+  minPeakProminenceAbs ........... 0.045  (m/s²)
+
+  Blend constant in Kotlin: MEDIUM_BLEND_FROM_PERMISSIVE_TO_BASELINE (must stay strictly between 0 and 1
+  so Medium does not duplicate Low).
+
+  All other parameters (default): thresholdWindowMs 1800, maxEvents 240, minCalibrationSamples 64.
+
+
+Preset LOW (StrokeDetectionSensitivity.LOW) — tick mark only (no label)
+-----------------------------------------------------------------------
+Description:
+  Full **AccelerometerStrokeDetector()** constructor defaults. Same as the former three-option Low.
+  One step more permissive than VERY_LOW; stricter than Medium.
+
+Implementation:
+  No custom arguments — full defaults (StrokeDetectorPresets.lowSensitivity):
+
+  minStrokeGapMs ................. 300
+  minDynamicRange ................ 0.14   (m/s²)
+  positiveBandFraction ........... 0.56   (crossing higher in span → stricter)
+  magnitudeSmoothAlpha ........... 0.50   (EMA on magnitude; lower = smoother)
+  recoveryBandFraction ........... 0.16   (fraction of span below positive band for re-arm)
+  peakProminenceFraction ......... 0.04
+  minPeakProminenceAbs ........... 0.05   (m/s²)
+
+
+Preset VERY_LOW (StrokeDetectionSensitivity.VERY_LOW) — slider bottom, labeled “Low”
+------------------------------------------------------------------------------------
+Description:
+  Strictest of the five levels. Extrapolated beyond constructor defaults (longer minStrokeGapMs,
+  higher thresholds). Fewest false strokes from noise or handling; soft strokes may be missed more
+  often than on any other level.
+
+Implementation:
+  Overrides (see StrokeDetectorPresets.veryLowSensitivity):
+
+  minStrokeGapMs ................. 320
+  minDynamicRange ................ 0.16   (m/s²)
+  positiveBandFraction ........... 0.59
+  magnitudeSmoothAlpha ........... 0.475  (EMA on magnitude)
+  recoveryBandFraction ........... 0.15
+  peakProminenceFraction ......... 0.045
+  minPeakProminenceAbs ........... 0.055  (m/s²)
+
+  All other parameters (default): thresholdWindowMs 1800, maxEvents 240, minCalibrationSamples 64.
+
+
+Migration from earlier app versions
+-----------------------------------
+  • Saved preference values HIGH, MEDIUM, and LOW still load correctly.
+  • Former three radio options map to slider steps 2, 3, and 4 (HIGH, MEDIUM, LOW enum values).
+  • VERY_HIGH and VERY_LOW are new steps above and below those three.
+  • UI labels “High” and “Low” now appear on VERY_HIGH (top) and VERY_LOW (bottom), not on the
+    intermediate HIGH and LOW enum steps.
+
+
+Revision note
+-------------
+This file matches StrokeDetectorPresets.kt + AccelerometerStrokeDetector constructor defaults as of
+the five-level vertical slider configuration.

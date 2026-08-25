@@ -1,0 +1,22 @@
+/local.properties
+/keystore.properties
+*.jks
+*.keystore
+/keystore/
+
+/.gradle/
+/build/
+**/build/
+/.idea/
+*.iml
+.DS_Store
+.kotlin/
+node_modules/
+package.json
+package-lock.json
+skills-lock.json
+
+# Built release artifacts (keep out of git)
+/app/release/
+*.apk
+*.aab
