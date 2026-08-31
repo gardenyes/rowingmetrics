@@ -17,15 +17,14 @@ fun Properties.requireKeystoreProperty(name: String): String =
 
 android {
     namespace = "com.gardenyes.rowingmetrics"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.gardenyes.rowingmetrics"
         minSdk = 26
-        targetSdk = 35
-        val appVersionCode = 2
-        versionCode = appVersionCode
-        versionName = appVersionCode.toString()
+        targetSdk = 36
+        versionCode = 21
+        versionName = "2.1"
     }
 
     signingConfigs {
