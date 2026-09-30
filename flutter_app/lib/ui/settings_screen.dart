@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:rowing_metrics/l10n/app_localizations.dart';
+
 import 'package:provider/provider.dart';
 
 import '../core/enums.dart';
@@ -13,23 +15,24 @@ class SettingsScreen extends StatelessWidget {
     final sensitivity = model.controller.getStrokeDetectionSensitivity();
     final gpsN = model.controller.getGpsDisplayAverageN();
     final language = model.platform.settings.getAppLanguage();
+    final l10n = AppLocalizations.of(context);
 
     return SafeArea(
       child: ListView(
         padding: const EdgeInsets.all(20),
         children: [
           Text(
-            'Settings',
+            l10n.settingsTitle,
             style: Theme.of(context).textTheme.headlineMedium,
           ),
           const SizedBox(height: 24),
           Text(
-            'Stroke detection sensitivity',
+            l10n.detectionSensitivity,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 8),
           Text(
-            _sensitivityLabel(sensitivity),
+            _sensitivityLabel(l10n, sensitivity),
             style: const TextStyle(color: Colors.white70),
           ),
           Slider(
@@ -37,7 +40,7 @@ class SettingsScreen extends StatelessWidget {
             min: 0,
             max: (StrokeDetectionSensitivity.values.length - 1).toDouble(),
             divisions: StrokeDetectionSensitivity.values.length - 1,
-            label: _sensitivityLabel(sensitivity),
+            label: _sensitivityLabel(l10n, sensitivity),
             onChanged: (v) {
               model.setSensitivity(
                 StrokeDetectionSensitivity.values[v.round()],
@@ -46,10 +49,14 @@ class SettingsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'GPS speed average samples',
+            l10n.speedSmoothing,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 8),
+          Text(
+            l10n.speedSmoothingDesc,
+            style: const TextStyle(color: Colors.white70),
+          ),
           Text('$gpsN', style: const TextStyle(color: Colors.white70)),
           Slider(
             value: gpsN.toDouble(),
@@ -61,7 +68,7 @@ class SettingsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'Language',
+            l10n.language,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 8),
@@ -72,7 +79,7 @@ class SettingsScreen extends StatelessWidget {
                 .map(
                   (l) => DropdownMenuItem(
                     value: l,
-                    child: Text(_languageLabel(l)),
+                    child: Text(_languageLabel(l10n, l)),
                   ),
                 )
                 .toList(),
@@ -85,31 +92,34 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  String _sensitivityLabel(StrokeDetectionSensitivity s) {
+  String _sensitivityLabel(
+    AppLocalizations l10n,
+    StrokeDetectionSensitivity s,
+  ) {
     switch (s) {
       case StrokeDetectionSensitivity.veryHigh:
-        return 'Very high';
+        return l10n.sensitivityVeryHigh;
       case StrokeDetectionSensitivity.high:
-        return 'High';
+        return l10n.sensitivityHigh;
       case StrokeDetectionSensitivity.medium:
-        return 'Medium';
+        return l10n.sensitivityMedium;
       case StrokeDetectionSensitivity.low:
-        return 'Low';
+        return l10n.sensitivityLow;
       case StrokeDetectionSensitivity.veryLow:
-        return 'Very low';
+        return l10n.sensitivityVeryLow;
     }
   }
 
-  String _languageLabel(AppLanguage l) {
+  String _languageLabel(AppLocalizations l10n, AppLanguage l) {
     switch (l) {
       case AppLanguage.english:
-        return 'English';
+        return l10n.languageEnglish;
       case AppLanguage.catalan:
-        return 'Català';
+        return l10n.languageCatalan;
       case AppLanguage.spanish:
-        return 'Español';
+        return l10n.languageSpanish;
       case AppLanguage.french:
-        return 'Français';
+        return l10n.languageFrench;
     }
   }
 }
