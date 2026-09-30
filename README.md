@@ -1,43 +1,45 @@
-# Rowing Metrics (Kotlin Multiplatform)
+# Rowing Metrics (Kotlin Multiplatform + Flutter migration)
 
-Cross-platform rowing session tracker with shared UI and business logic.
+Cross-platform rowing session tracker.
 
-## Modules
+## Active migration
+
+A Flutter rewrite lives in **`flutter_app/`**. Prefer this for new iOS/Android work.
+
+| Path | Role |
+|------|------|
+| `flutter_app` | Flutter app (session engine, UI, GPS/motion, sqflite) |
+| `shared` | Legacy KMP Compose library (still present) |
+| `app` | Legacy Android host for KMP |
+| `iosApp` | Legacy incomplete SwiftUI + Compose host |
+
+### Run Flutter
+
+```bash
+cd flutter_app
+flutter pub get
+flutter run
+```
+
+iOS builds require macOS + Xcode. Android can be built from this Windows environment.
+
+### Flutter dependencies (iOS + Android)
+
+- `geolocator` — GPS speed/distance
+- `sensors_plus` — accelerometer / stroke detection
+- `sqflite` — activity history (`rowing_metrics.db`)
+- `shared_preferences` — settings
+- `provider` — UI state
+- `share_plus` — reserved for CSV export
+
+## Legacy KMP modules
 
 | Module | Role |
 |--------|------|
-| `shared` | KMP library: stroke/GPS math, SQLDelight storage, Compose UI, session engine |
-| `app` | Android application (permissions, lock screen, signing) |
-| `iosApp` | iOS host (SwiftUI + Compose Multiplatform) |
-
-## Build Android
+| `shared` | KMP library: stroke/GPS math, SQLDelight, Compose UI |
+| `app` | Android application |
+| `iosApp` | Incomplete iOS host (missing `.xcodeproj`) |
 
 ```bash
 ./gradlew :app:assembleDebug
 ```
-
-Open the project in Android Studio and run the `app` configuration.
-
-## Build iOS (macOS + Xcode)
-
-1. Generate the shared framework:
-
-   ```bash
-   ./gradlew :shared:linkDebugFrameworkIosSimulatorArm64
-   ```
-
-2. Open `iosApp/iosApp.xcodeproj` in Xcode (project file must reference the `Shared` framework from `shared/build/bin/...`).
-
-3. Run on a simulator or device.
-
-iOS GPS and motion are stubbed in `IosPlatformServices` until Core Location / Core Motion bindings are added. Settings and activity history work via SQLDelight.
-
-## Architecture
-
-- **Shared session engine** — `RowingSessionController` (stroke detection, SPM, distance, speed smoothing)
-- **Platform services** — `PlatformServices` (GPS, sensors, preferences, DB) with Android and iOS implementations
-- **UI** — `RowingApp` in `shared` (Compose Multiplatform)
-
-## Migrating from the old Android-only layout
-
-Room was replaced with **SQLDelight** in `shared`. The database file name remains `rowing_metrics.db` on Android.
