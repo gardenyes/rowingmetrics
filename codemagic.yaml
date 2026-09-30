@@ -1,0 +1,73 @@
+# Codemagic config — Flutter app lives in flutter_app/ (not repo root).
+# https://docs.codemagic.io/yaml-quick-start/building-a-flutter-app/
+
+workflows:
+  ios-workflow:
+    name: iOS
+    working_directory: flutter_app
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+    # Uncomment when an App Store Connect API key is configured in Codemagic:
+    # integrations:
+    #   app_store_connect: <App Store Connect API key name>
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.gardenyes.rowingMetrics
+      vars:
+        # Optional: App Store Connect numeric Apple ID for auto build numbers
+        # APP_STORE_APPLE_ID: "1234567890"
+    scripts:
+      - name: Set up code signing
+        script: |
+          xcode-project use-profiles
+      - name: Get Flutter packages
+        script: |
+          flutter pub get
+      - name: Install CocoaPods dependencies
+        script: |
+          find . -name "Podfile" -execdir pod install \;
+      - name: Flutter analyze
+        script: |
+          flutter analyze --no-fatal-infos
+      - name: Build IPA
+        script: |
+          flutter build ipa --release \
+            --export-options-plist=/Users/builder/export_options.plist
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - flutter_drive.log
+    publishing:
+      email:
+        recipients:
+          - $CM_BUILD_EMAIL
+        notify:
+          success: false
+          failure: true
+      # Optional App Store Connect publishing (needs integrations.app_store_connect):
+      # app_store_connect:
+      #   auth: integration
+      #   submit_to_testflight: true
+
+  android-workflow:
+    name: Android
+    working_directory: flutter_app
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    environment:
+      flutter: stable
+      java: 17
+    scripts:
+      - name: Get Flutter packages
+        script: |
+          flutter pub get
+      - name: Build APK
+        script: |
+          flutter build apk --release
+    artifacts:
+      - build/**/outputs/**/*.apk
+      - build/**/outputs/**/*.aab

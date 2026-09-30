@@ -21,6 +21,10 @@ flutter pub get
 flutter run
 ```
 
+### Codemagic (iOS / Android)
+
+`codemagic.yaml` at the repo root sets `working_directory: flutter_app` so builds use the Flutter project (not the KMP root). After pushing, in Codemagic choose the **iOS** or **Android** workflow from that file (or scan for configuration).
+
 iOS builds require macOS + Xcode. Android can be built from this Windows environment.
 
 ### Flutter dependencies (iOS + Android)
