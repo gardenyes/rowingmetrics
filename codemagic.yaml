@@ -41,17 +41,14 @@ workflows:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
       - flutter_drive.log
-    publishing:
-      email:
-        recipients:
-          - $CM_BUILD_EMAIL
-        notify:
-          success: false
-          failure: true
-      # Optional App Store Connect publishing (needs integrations.app_store_connect):
-      # app_store_connect:
-      #   auth: integration
-      #   submit_to_testflight: true
+    # Optional email notify (set a real address; empty/$CM_BUILD_EMAIL fails validation):
+    # publishing:
+    #   email:
+    #     recipients:
+    #       - you@example.com
+    #     notify:
+    #       success: false
+    #       failure: true
 
   android-workflow:
     name: Android
