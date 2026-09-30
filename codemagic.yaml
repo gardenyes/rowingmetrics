@@ -17,9 +17,9 @@ workflows:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.gardenyes.rowingMetrics
-      vars:
-        # Optional: App Store Connect numeric Apple ID for auto build numbers
-        # APP_STORE_APPLE_ID: "1234567890"
+      # Optional vars example:
+      # vars:
+      #   APP_STORE_APPLE_ID: "1234567890"
     scripts:
       - name: Set up code signing
         script: |
