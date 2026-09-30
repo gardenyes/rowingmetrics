@@ -1,5 +1,13 @@
 # Codemagic config — Flutter app lives in flutter_app/ (not repo root).
-# https://docs.codemagic.io/yaml-quick-start/building-a-flutter-app/
+# https://docs.codemagic.io/yaml-code-signing/signing-ios/
+#
+# iOS signing uses App Store Connect API (automatic), not uploaded profiles.
+# Before building, in Codemagic:
+# 1) Team settings → Integrations → Developer Portal: add an App Store Connect API key
+#    and set integrations.app_store_connect below to that key's name.
+# 2) App → Environment variables: add secret CERTIFICATE_PRIVATE_KEY (RSA private key
+#    for iOS Distribution) in a group named code_signing.
+# 3) In Apple Developer, ensure App ID com.gardenyes.rowingMetrics exists.
 
 workflows:
   ios-workflow:
@@ -7,21 +15,30 @@ workflows:
     working_directory: flutter_app
     max_build_duration: 120
     instance_type: mac_mini_m2
-    # Uncomment when an App Store Connect API key is configured in Codemagic:
-    # integrations:
-    #   app_store_connect: <App Store Connect API key name>
+    integrations:
+      # Must match the API key name in Codemagic → Team settings → Developer Portal
+      app_store_connect: App Store Connect
     environment:
+      groups:
+        - code_signing
       flutter: stable
       xcode: latest
       cocoapods: default
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: com.gardenyes.rowingMetrics
-      # Optional vars example:
-      # vars:
-      #   APP_STORE_APPLE_ID: "1234567890"
+      vars:
+        BUNDLE_ID: com.gardenyes.rowingMetrics
     scripts:
-      - name: Set up code signing
+      - name: Set up keychain
+        script: |
+          keychain initialize
+      - name: Fetch signing files from App Store Connect
+        script: |
+          app-store-connect fetch-signing-files "$BUNDLE_ID" \
+            --type IOS_APP_STORE \
+            --create
+      - name: Add certificates to keychain
+        script: |
+          keychain add-certificates
+      - name: Set up code signing on Xcode project
         script: |
           xcode-project use-profiles
       - name: Get Flutter packages
@@ -41,14 +58,6 @@ workflows:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
       - flutter_drive.log
-    # Optional email notify (set a real address; empty/$CM_BUILD_EMAIL fails validation):
-    # publishing:
-    #   email:
-    #     recipients:
-    #       - you@example.com
-    #     notify:
-    #       success: false
-    #       failure: true
 
   android-workflow:
     name: Android
